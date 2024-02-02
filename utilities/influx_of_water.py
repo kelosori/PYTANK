@@ -28,13 +28,16 @@ class Fetkovich:
 
         # Check if the time list is in datetime format
         if all(isinstance(t, datetime) for t in time_step):
+            # If all elements are alreaady datetime objects, convert to cumulative days
             self.time_step = [(t - time_step[0]).days for t in time_step]
         elif all(isinstance(t, pd.Timestamp) for t in time_step):
+            # If elements are Timestamp objects, convert to datetime and then to comulative days
             datetime_list = [pd.to_datetime(t) for t in time_step]
             self.time_step = [(t - datetime_list[0].days for t in datetime_list)]
-        else:
-            # Convert dates to cumulative days
-            self.time_step = variable_type(time_step)
+        elif all(isinstance(t, str) for t in time_step):
+            # If all elements are strings, convert to datetime and then to cumulative days
+            datetime_list = [datetime.strptime(t, '%Y-%m-%d') for t in time_step]
+            self.time_step = [(t - datetime_list[0]).days for t in datetime_list]
 
         # Automatically influx of water data upon object creation
         self.we
@@ -129,13 +132,16 @@ class Carter_Tracy:
 
         # Check if the time list is in datetime format
         if all(isinstance(t, datetime) for t in time):
-            self.time = [(t - time[0].days for t in time)]
+            # If all elements are alreaady datetime objects, convert to cumulative days
+            self.time = [(t - time[0]).days for t in time]
         elif all(isinstance(t, pd.Timestamp) for t in time):
+            # If elements are Timestamp objects, convert to datetime and then to comulative days
             datetime_list = [pd.to_datetime(t) for t in time]
             self.time = [(t - datetime_list[0].days for t in datetime_list)]
-        else:
-            # Convert dates to cumulative days
-            self.time = variable_type(time)
+        elif all(isinstance(t, str) for t in time):
+            # If all elements are strings, convert to datetime and then to cumulative days
+            datetime_list = [datetime.strptime(t, '%Y-%m-%d') for t in time]
+            self.time = [(t - datetime_list[0]).days for t in datetime_list]
 
         # Automatically influx of water data upon object creation
         self.we()
@@ -217,13 +223,23 @@ ct = 0.000007
 theta = 140
 k = 200
 water_visc = 0.55
+"""
+# Metodos propios
 production_file = "../tests/data_for_tests/full_example_1/production.csv"
 pressure_file = "../tests/data_for_tests/full_example_1/pressures.csv"
 pvt_file = "../tests/data_for_tests/full_example_1/pvt.csv"
 pr = PressureAvgTank(production_file, pressure_file, pvt_file,"tank_south").data_avg()['PRESSURE_DATUM'].tolist()
-time_step = PressureAvgTank(production_file, pressure_file, pvt_file,"tank_south").data_avg()['START_DATETIME'].tolist()
-df = Fetkovich(aq_radius,res_radius,aq_thickness,aq_por,ct,pr,theta,k,water_visc,time_step).we()
+time_step = PressureAvgTank(production_file, pressure_file, pvt_file,"tank_south").data_avg()['START_DATETIME'].tolist()"""
+
+# mbal_Dataframe
+df = pd.read_csv("../pytank/mbal_Dataframe.csv")
+fechas = df.loc[df['Tank'] == 'tank_center', 'DATE']
+presiones = df.loc[df['Tank'] == 'tank_center', 'PRESSURE_DATUM']
+print(fechas)
+
+df = Fetkovich(aq_radius,res_radius,aq_thickness,aq_por,ct,presiones.tolist(),theta,k,water_visc,fechas.tolist()).we()
 print(df)
+
 
 #%%
 """aq_por = 0.2

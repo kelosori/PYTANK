@@ -363,10 +363,7 @@ production_file = "../tests/data_for_tests/full_example_1/production.csv"
 pressure_file = "../tests/data_for_tests/full_example_1/pressures.csv"
 pvt_file = "../tests/data_for_tests/full_example_1/pvt.csv"
 
-data1 =PressureAvgTank(production_file, pressure_file, pvt_file,"tank_south").plot()
 
 
-f = PressureAvgTank(production_file, pressure_file, pvt_file,"tank_south").data_avg()
-print(f)
-print(f['START_DATETIME'].tolist())
+
 
